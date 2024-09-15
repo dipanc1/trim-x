@@ -1,11 +1,14 @@
 import { View, StyleSheet } from "react-native";
-import Player from "./Player";
+import TrackList from "./TrackList";
+import { MediaContextProvider } from "@/context/MediaContext";
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Player />
-    </View>
+    <MediaContextProvider>
+      <View style={styles.container}>
+        <TrackList />
+      </View>
+    </MediaContextProvider>
   );
 }
 

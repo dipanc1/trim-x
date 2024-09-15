@@ -1,0 +1,60 @@
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React from "react";
+import { MediaContext } from "@/context/MediaContext";
+import Player from "../Player";
+
+interface PlaylistItem {
+  id: string;
+  title: string;
+  uri: string;
+  duration: number;
+}
+
+interface TrackListProps {
+  playlist: PlaylistItem[];
+  selectTrack: (track: PlaylistItem) => void;
+}
+
+const TrackList: React.FC<TrackListProps> = ({ playlist, selectTrack }) => {
+  const mediaContext = React.useContext(MediaContext);
+
+  if (!mediaContext) {
+    throw new Error("MediaContext is null");
+  }
+
+  const { currentTrack } = mediaContext;
+
+  const renderItem = ({ item }: { item: PlaylistItem }) => (
+    <TouchableOpacity onPress={() => selectTrack(item)} style={{ padding: 10 }}>
+      <Text>{item.title}</Text>
+    </TouchableOpacity>
+  );
+
+  return currentTrack ? (
+    <Player />
+  ) : (
+    <View style={styles.container}>
+      <FlatList
+        data={playlist}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
+  );
+};
+
+export default TrackList;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

@@ -86,7 +86,7 @@ const PlayerContainer = () => {
     try {
       const media = await MediaLibrary.getAssetsAsync({
         mediaType: MediaLibrary.MediaType.audio,
-        first: 1000, // Adjust this number based on your needs
+        first: 10, // Adjust this number based on your needs
       });
 
       const newPlaylist = media.assets
