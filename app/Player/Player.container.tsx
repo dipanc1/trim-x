@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
 
 import { Audio, InterruptionModeAndroid } from "expo-av";
 import * as FileSystem from "expo-file-system";
@@ -7,15 +6,7 @@ import * as FileSystem from "expo-file-system";
 import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import Seekbar from "@/components/Seekbar";
-import {
-  MediaPlayerButtons,
-  OnLoop,
-  PitchCorrection,
-  ThroughEarpiece,
-  VolumeControl,
-} from "@/components";
-import { BottomButtonContainer, MiddleButtonContainer } from "@/common";
+import Player from "./Player";
 
 class PlaylistItem {
   name: string;
@@ -50,12 +41,9 @@ const PLAYLIST = [
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
 
-const BACKGROUND_COLOR = "#FFF8ED";
-
-const FONT_SIZE = 14;
 const LOADING_STRING = "... loading ...";
 
-const Home: React.FC = () => {
+const PlayerContainer = () => {
   const [index, setIndex] = useState(0);
   const [playbackInstance, setPlaybackInstance] = useState<Audio.Sound | null>(
     null
@@ -221,92 +209,28 @@ const Home: React.FC = () => {
     loadNewPlaybackInstance(playing);
   };
 
-  return !state.fontLoaded ? (
-    <View style={styles.emptyContainer} />
-  ) : (
-    <View style={styles.container}>
-      <View />
-
-      <View style={styles.nameContainer}>
-        <Text style={[styles.text, { fontFamily: "cutive-mono-regular" }]}>
-          {state.playbackInstanceName}
-        </Text>
-      </View>
-
-      <View />
-
-      <View style={styles.space} />
-
-      <Seekbar
-        isLoading={state.isLoading}
-        isBuffering={state.isBuffering}
-        playbackInstance={playbackInstance}
-        playbackInstancePosition={state.playbackInstancePosition}
-        playbackInstanceDuration={state.playbackInstanceDuration}
-        shouldPlay={state.shouldPlay}
-      />
-
-      <MediaPlayerButtons
-        isLoading={state.isLoading}
-        isPlaying={state.isPlaying}
-        shouldPlay={state.shouldPlay}
-        playbackInstance={playbackInstance}
-        advanceIndex={advanceIndex}
-        updatePlaybackInstanceForIndex={updatePlaybackInstanceForIndex}
-      />
-
-      <MiddleButtonContainer>
-        <VolumeControl
-          muted={state.muted}
-          playbackInstance={playbackInstance}
-        />
-        <OnLoop
-          playbackInstance={playbackInstance}
-          loopingType={state.loopingType}
-          LOOPING_TYPE_ONE={LOOPING_TYPE_ONE}
-        />
-      </MiddleButtonContainer>
-
-      <BottomButtonContainer>
-        <ThroughEarpiece
-          setState={setState}
-          throughEarpiece={state.throughEarpiece}
-        />
-        <PitchCorrection
-          playbackInstance={playbackInstance}
-          rate={state.rate}
-          shouldCorrectPitch={state.shouldCorrectPitch}
-        />
-      </BottomButtonContainer>
-
-      <View />
-    </View>
+  return (
+    <Player
+      fontLoaded={state.fontLoaded}
+      isLoading={state.isLoading}
+      isPlaying={state.isPlaying}
+      isBuffering={state.isBuffering}
+      shouldPlay={state.shouldPlay}
+      playbackInstance={playbackInstance}
+      playbackInstanceName={state.playbackInstanceName}
+      playbackInstancePosition={state.playbackInstancePosition}
+      playbackInstanceDuration={state.playbackInstanceDuration}
+      advanceIndex={advanceIndex}
+      updatePlaybackInstanceForIndex={updatePlaybackInstanceForIndex}
+      muted={state.muted}
+      setState={setState}
+      throughEarpiece={state.throughEarpiece}
+      rate={state.rate}
+      shouldCorrectPitch={state.shouldCorrectPitch}
+      loopingType={state.loopingType}
+      LOOPING_TYPE_ONE={LOOPING_TYPE_ONE}
+    />
   );
 };
 
-const styles = StyleSheet.create({
-  emptyContainer: {
-    alignSelf: "stretch",
-    backgroundColor: BACKGROUND_COLOR,
-  },
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "center",
-    alignSelf: "stretch",
-    backgroundColor: BACKGROUND_COLOR,
-  },
-  nameContainer: {
-    height: FONT_SIZE,
-  },
-  space: {
-    height: FONT_SIZE,
-  },
-  text: {
-    fontSize: FONT_SIZE,
-    minHeight: FONT_SIZE,
-  },
-});
-
-export default Home;
+export default PlayerContainer;

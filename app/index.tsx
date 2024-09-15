@@ -1,11 +1,10 @@
-import { Link } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
-import Home from "./home";
+import { View, StyleSheet } from "react-native";
+import Player from "./Player";
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Home />
+      <Player />
     </View>
   );
 }
