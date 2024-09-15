@@ -9,8 +9,8 @@ import {
   ICON_LOOP_ALL_BUTTON,
   ICON_LOOP_ONE_BUTTON,
   ICON_PLAY_BUTTON,
+  Colors,
 } from "@/constants";
-import { Colors } from "@/constants";
 
 const LOOPING_TYPE_ICONS = { 0: ICON_LOOP_ALL_BUTTON, 1: ICON_LOOP_ONE_BUTTON };
 

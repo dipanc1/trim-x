@@ -29,6 +29,8 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
     null
   );
 
+  const [trimTrack, setTrimTrack] = useState(false);
+
   const [state, setState] = useState({
     playbackInstanceName: LOADING_STRING,
     loopingType: LOOPING_TYPE_ALL,
@@ -154,6 +156,10 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
     setCurrentTrack(null);
   };
 
+  const toggleTrimTrack = () => {
+    setTrimTrack(!trimTrack);
+  };
+
   return (
     <Player
       fontLoaded={state.fontLoaded}
@@ -175,6 +181,8 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
       loopingType={state.loopingType}
       LOOPING_TYPE_ONE={LOOPING_TYPE_ONE}
       backToTrackList={backToTrackList}
+      trimTrack={trimTrack}
+      toggleTrimTrack={toggleTrimTrack}
     />
   );
 };

@@ -1,10 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 
-const Trim = () => {
+interface TrimProps {
+  toggleTrimTrack: () => void;
+}
+
+const Trim: React.FC<TrimProps> = ({ toggleTrimTrack }) => {
   return (
     <View>
       <Text>Trim</Text>
+      <TouchableOpacity onPress={toggleTrimTrack}>
+        <Text>Go to Player</Text>
+      </TouchableOpacity>
     </View>
   );
 };

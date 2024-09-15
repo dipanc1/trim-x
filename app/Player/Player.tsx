@@ -11,9 +11,10 @@ import {
   ThroughEarpiece,
   VolumeControl,
 } from "@/components";
-import { BottomButtonContainer, MiddleButtonContainer } from "@/common";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
+import { BottomButtonContainer, MiddleButtonContainer } from "@/common";
+import { Colors } from "@/constants";
+import Trim from "../Trim";
 
 interface PlayerProps {
   fontLoaded: boolean;
@@ -35,6 +36,8 @@ interface PlayerProps {
   loopingType: number;
   LOOPING_TYPE_ONE: number;
   backToTrackList: () => void;
+  trimTrack: boolean;
+  toggleTrimTrack: () => void;
 }
 
 const FONT_SIZE = 14;
@@ -58,10 +61,14 @@ const Player: React.FC<PlayerProps> = ({
   shouldCorrectPitch,
   loopingType,
   LOOPING_TYPE_ONE,
-  backToTrackList
+  backToTrackList,
+  trimTrack,
+  toggleTrimTrack,
 }) => {
   return !fontLoaded ? (
     <View style={styles.emptyContainer} />
+  ) : trimTrack ? (
+    <Trim toggleTrimTrack={toggleTrimTrack} />
   ) : (
     <View style={styles.container}>
       <View />
@@ -106,6 +113,10 @@ const Player: React.FC<PlayerProps> = ({
       <BottomButtonContainer>
         <TouchableOpacity onPress={backToTrackList}>
           <MaterialIcons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={toggleTrimTrack}>
+          <MaterialIcons name="crop" size={24} color="black" />
         </TouchableOpacity>
 
         <PitchCorrection

@@ -1,8 +1,12 @@
 import React from "react";
 import Trim from "./Trim";
 
-const TrimContainer = () => {
-  return <Trim />;
+interface TrimContainerProps {
+  toggleTrimTrack: () => void;
+}
+
+const TrimContainer = ({ toggleTrimTrack }: TrimContainerProps) => {
+  return <Trim toggleTrimTrack={toggleTrimTrack} />;
 };
 
 export default TrimContainer;

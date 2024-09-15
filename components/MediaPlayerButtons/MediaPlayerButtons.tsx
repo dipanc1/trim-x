@@ -12,9 +12,8 @@ import {
   ICON_PAUSE_BUTTON,
   ICON_PLAY_BUTTON,
   ICON_STOP_BUTTON,
+  Colors,
 } from "@/constants";
-import { Colors } from "@/constants";
-
 
 const DISABLED_OPACITY = 0.5;
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
