@@ -6,10 +6,10 @@ import { ICON_THUMB_1, ICON_TRACK_1 } from "@/constants/Icons";
 interface SeekbarProps {
   isLoading: boolean;
   isBuffering: boolean;
-  playbackInstance: any;
-  playbackInstancePosition: number | null;
-  playbackInstanceDuration: number | null;
-  shouldPlay: boolean;
+  getSeekSliderPosition: () => number;
+  onSeekSliderValueChange: (value: number) => void;
+  onSeekSliderSlidingComplete: (value: number) => void;
+  getTimestamp: () => string;
 }
 
 const BUFFERING_STRING = "...buffering...";
@@ -19,74 +19,11 @@ const FONT_SIZE = 14;
 const Seekbar: React.FC<SeekbarProps> = ({
   isLoading,
   isBuffering,
-  playbackInstance,
-  playbackInstancePosition,
-  playbackInstanceDuration,
-  shouldPlay,
+  getSeekSliderPosition,
+  onSeekSliderValueChange,
+  onSeekSliderSlidingComplete,
+  getTimestamp,
 }) => {
-  const [isSeeking, setIsSeeking] = React.useState(false);
-  const [shouldPlayAtEndOfSeek, setShouldPlayAtEndOfSeek] =
-    React.useState(false);
-
-  const onSeekSliderValueChange = (value: number) => {
-    if (playbackInstance != null && !isSeeking) {
-      setIsSeeking(true);
-      setShouldPlayAtEndOfSeek(shouldPlay);
-      playbackInstance.pauseAsync();
-    }
-  };
-
-  const onSeekSliderSlidingComplete = async (value: number) => {
-    if (playbackInstance != null) {
-      setIsSeeking(false);
-      const seekPosition = value * (playbackInstanceDuration || 0);
-      if (shouldPlayAtEndOfSeek) {
-        playbackInstance.playFromPositionAsync(seekPosition);
-      } else {
-        playbackInstance.setPositionAsync(seekPosition);
-      }
-    }
-  };
-
-  const getSeekSliderPosition = () => {
-    if (
-      playbackInstance != null &&
-      playbackInstancePosition != null &&
-      playbackInstanceDuration != null
-    ) {
-      return playbackInstancePosition / playbackInstanceDuration;
-    }
-    return 0;
-  };
-
-  const getMMSSFromMillis = (millis: number) => {
-    const totalSeconds = millis / 1000;
-    const seconds = Math.floor(totalSeconds % 60);
-    const minutes = Math.floor(totalSeconds / 60);
-
-    const padWithZero = (number: number) => {
-      const string = number.toString();
-      if (number < 10) {
-        return "0" + string;
-      }
-      return string;
-    };
-    return padWithZero(minutes) + ":" + padWithZero(seconds);
-  };
-
-  const getTimestamp = () => {
-    if (
-      playbackInstance != null &&
-      playbackInstancePosition != null &&
-      playbackInstanceDuration != null
-    ) {
-      return `${getMMSSFromMillis(
-        playbackInstancePosition
-      )} / ${getMMSSFromMillis(playbackInstanceDuration)}`;
-    }
-    return "";
-  };
-  
   return (
     <View
       style={[

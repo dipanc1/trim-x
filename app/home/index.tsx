@@ -7,25 +7,21 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { Audio, InterruptionModeAndroid } from "expo-av";
-import * as Font from "expo-font";
-import Slider from "@react-native-community/slider";
 
+import { Audio, InterruptionModeAndroid } from "expo-av";
+import * as FileSystem from "expo-file-system";
+
+import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
+
 import {
-  ICON_BACK_BUTTON,
-  ICON_FORWARD_BUTTON,
   ICON_LOOP_ALL_BUTTON,
   ICON_LOOP_ONE_BUTTON,
   ICON_MUTED_BUTTON,
-  ICON_PAUSE_BUTTON,
-  ICON_PLAY_BUTTON,
-  ICON_STOP_BUTTON,
-  ICON_THUMB_2,
-  ICON_TRACK_1,
-  ICON_UNMUTED_BUTTON,
 } from "@/constants/Icons";
+
 import Seekbar from "@/components/Seekbar";
+import { MediaPlayerButtons, OnLoop, VolumeControl } from "@/components";
 
 class PlaylistItem {
   name: string;
@@ -62,11 +58,10 @@ const ICON_THROUGH_SPEAKER = "speaker";
 
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
-const LOOPING_TYPE_ICONS = { 0: ICON_LOOP_ALL_BUTTON, 1: ICON_LOOP_ONE_BUTTON };
 
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
 const BACKGROUND_COLOR = "#FFF8ED";
-const DISABLED_OPACITY = 0.5;
+
 const FONT_SIZE = 14;
 const LOADING_STRING = "... loading ...";
 
@@ -75,6 +70,9 @@ const Home: React.FC = () => {
   const [playbackInstance, setPlaybackInstance] = useState<Audio.Sound | null>(
     null
   );
+
+  const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
+
   const [state, setState] = useState({
     playbackInstanceName: LOADING_STRING,
     loopingType: LOOPING_TYPE_ALL,
@@ -110,14 +108,51 @@ const Home: React.FC = () => {
       });
 
       setState((prevState) => ({ ...prevState, fontLoaded: true }));
+      // await loadPlaylist();
       loadNewPlaybackInstance(false);
     };
 
     initializeAudio();
   }, []);
 
+  const loadPlaylist = async () => {
+    try {
+      let mp3Files: { name: string; uri: string }[] = [];
+      if (FileSystem.documentDirectory) {
+        mp3Files = await scanDirectory(FileSystem.documentDirectory);
+      } else {
+        console.error("FileSystem.documentDirectory is null");
+      }
+      const newPlaylist = mp3Files.map((file) => {
+        return new PlaylistItem(file.name, file.uri, false);
+      });
+      setPlaylist(newPlaylist);
+    } catch (error) {
+      console.error("Error loading playlist:", error);
+    }
+  };
+
+  const scanDirectory = async (
+    directory: string
+  ): Promise<{ name: string; uri: string }[]> => {
+    let mp3Files: { name: string; uri: string }[] = [];
+    const files = await FileSystem.readDirectoryAsync(directory);
+
+    for (const file of files) {
+      const fileInfo = await FileSystem.getInfoAsync(directory + file);
+      if (fileInfo.isDirectory) {
+        const nestedFiles = await scanDirectory(directory + file + "/");
+        mp3Files = mp3Files.concat(nestedFiles);
+      } else if (file.endsWith(".mp3")) {
+        mp3Files.push({ name: file, uri: directory + file });
+      }
+    }
+
+    return mp3Files;
+  };
+
   const loadNewPlaybackInstance = async (playing: boolean) => {
-    if (playbackInstance != null) {
+    if (playbackInstance) {
       await playbackInstance.unloadAsync();
       setPlaybackInstance(null);
     }
@@ -196,58 +231,8 @@ const Home: React.FC = () => {
     loadNewPlaybackInstance(playing);
   };
 
-  const onPlayPausePressed = () => {
-    if (playbackInstance != null) {
-      if (state.isPlaying) {
-        playbackInstance.pauseAsync();
-      } else {
-        playbackInstance.playAsync();
-      }
-    }
-  };
-
-  const onStopPressed = () => {
-    if (playbackInstance != null) {
-      playbackInstance.stopAsync();
-    }
-  };
-
-  const onForwardPressed = () => {
-    if (playbackInstance != null) {
-      advanceIndex(true);
-      updatePlaybackInstanceForIndex(state.shouldPlay);
-    }
-  };
-
-  const onBackPressed = () => {
-    if (playbackInstance != null) {
-      advanceIndex(false);
-      updatePlaybackInstanceForIndex(state.shouldPlay);
-    }
-  };
-
-  const onMutePressed = () => {
-    if (playbackInstance != null) {
-      playbackInstance.setIsMutedAsync(!state.muted);
-    }
-  };
-
-  const onLoopPressed = () => {
-    if (playbackInstance != null) {
-      playbackInstance.setIsLoopingAsync(
-        state.loopingType !== LOOPING_TYPE_ONE
-      );
-    }
-  };
-
-  const onVolumeSliderValueChange = (value: number) => {
-    if (playbackInstance != null) {
-      playbackInstance.setVolumeAsync(value);
-    }
-  };
-
   const trySetRate = async (rate: number, shouldCorrectPitch: boolean) => {
-    if (playbackInstance != null) {
+    if (playbackInstance) {
       try {
         await playbackInstance.setRateAsync(rate, shouldCorrectPitch);
       } catch (error) {
@@ -295,101 +280,30 @@ const Home: React.FC = () => {
         playbackInstanceDuration={state.playbackInstanceDuration}
         shouldPlay={state.shouldPlay}
       />
-      {/*
-       * 3. Buttons
-       */}
-      <View
-        style={[
-          styles.buttonsContainerBase,
-          styles.buttonsContainerTopRow,
-          {
-            opacity: state.isLoading ? DISABLED_OPACITY : 1.0,
-          },
-        ]}
-      >
-        <TouchableHighlight
-          underlayColor={BACKGROUND_COLOR}
-          style={styles.wrapper}
-          onPress={onBackPressed}
-          disabled={state.isLoading}
-        >
-          <Image style={styles.button} source={ICON_BACK_BUTTON.module} />
-        </TouchableHighlight>
-        <TouchableHighlight
-          underlayColor={BACKGROUND_COLOR}
-          style={styles.wrapper}
-          onPress={onPlayPausePressed}
-          disabled={state.isLoading}
-        >
-          <Image
-            style={styles.button}
-            source={
-              state.isPlaying
-                ? ICON_PAUSE_BUTTON.module
-                : ICON_PLAY_BUTTON.module
-            }
-          />
-        </TouchableHighlight>
-        <TouchableHighlight
-          underlayColor={BACKGROUND_COLOR}
-          style={styles.wrapper}
-          onPress={onStopPressed}
-          disabled={state.isLoading}
-        >
-          <Image style={styles.button} source={ICON_STOP_BUTTON.module} />
-        </TouchableHighlight>
-        <TouchableHighlight
-          underlayColor={BACKGROUND_COLOR}
-          style={styles.wrapper}
-          onPress={onForwardPressed}
-          disabled={state.isLoading}
-        >
-          <Image style={styles.button} source={ICON_FORWARD_BUTTON.module} />
-        </TouchableHighlight>
-      </View>
+
+      <MediaPlayerButtons
+        isLoading={state.isLoading}
+        isPlaying={state.isPlaying}
+        shouldPlay={state.shouldPlay}
+        playbackInstance={playbackInstance}
+        advanceIndex={advanceIndex}
+        updatePlaybackInstanceForIndex={updatePlaybackInstanceForIndex}
+      />
       {/*
        * 3. Volume slider and mute button 4. Pitch correction slider and
        */}
       <View
         style={[styles.buttonsContainerBase, styles.buttonsContainerMiddleRow]}
       >
-        <View style={styles.volumeContainer}>
-          <TouchableHighlight
-            underlayColor={BACKGROUND_COLOR}
-            style={styles.wrapper}
-            onPress={onMutePressed}
-          >
-            <Image
-              style={styles.button}
-              source={
-                state.muted
-                  ? ICON_MUTED_BUTTON.module
-                  : ICON_UNMUTED_BUTTON.module
-              }
-            />
-          </TouchableHighlight>
-          <Slider
-            style={styles.volumeSlider}
-            trackImage={ICON_TRACK_1.module}
-            thumbImage={ICON_THUMB_2.module}
-            value={1}
-            onValueChange={onVolumeSliderValueChange}
-          />
-        </View>
-        <TouchableHighlight
-          underlayColor={BACKGROUND_COLOR}
-          style={styles.wrapper}
-          onPress={onLoopPressed}
-        >
-          <Image
-            style={styles.button}
-            source={
-              LOOPING_TYPE_ICONS[
-                state.loopingType as keyof typeof LOOPING_TYPE_ICONS
-              ].module
-            }
-          />
-        </TouchableHighlight>
+        <VolumeControl
+          muted={state.muted}
+          playbackInstance={playbackInstance}
+        />
+        <OnLoop
+          playbackInstance={playbackInstance}
+          loopingType={state.loopingType}
+          LOOPING_TYPE_ONE={LOOPING_TYPE_ONE}
+        />
       </View>
       {/*
        * 5. Pitch correction 6. Through earpiece
@@ -466,26 +380,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  buttonsContainerTopRow: {
-    maxHeight: ICON_PLAY_BUTTON.height,
-    minWidth: DEVICE_WIDTH / 2.0,
-    maxWidth: DEVICE_WIDTH / 2.0,
-  },
   buttonsContainerMiddleRow: {
     maxHeight: ICON_MUTED_BUTTON.height,
     alignSelf: "stretch",
     paddingRight: 20,
-  },
-  volumeContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    minWidth: DEVICE_WIDTH / 2.0,
-    maxWidth: DEVICE_WIDTH / 2.0,
-  },
-  volumeSlider: {
-    width: DEVICE_WIDTH / 2.0 - ICON_MUTED_BUTTON.width,
   },
   buttonsContainerBottomRow: {
     maxHeight: 32,
