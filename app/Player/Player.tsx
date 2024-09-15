@@ -102,14 +102,15 @@ const Player: React.FC<PlayerProps> = ({
       </MiddleButtonContainer>
 
       <BottomButtonContainer>
-        <ThroughEarpiece
-          setState={setState}
-          throughEarpiece={throughEarpiece}
-        />
         <PitchCorrection
           playbackInstance={playbackInstance}
           rate={rate}
           shouldCorrectPitch={shouldCorrectPitch}
+        />
+        
+        <ThroughEarpiece
+          setState={setState}
+          throughEarpiece={throughEarpiece}
         />
       </BottomButtonContainer>
 

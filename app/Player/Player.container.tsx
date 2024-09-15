@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { Audio, InterruptionModeAndroid } from "expo-av";
-import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 
 import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -20,37 +20,17 @@ class PlaylistItem {
   }
 }
 
-const PLAYLIST = [
-  new PlaylistItem(
-    "Comfort Fit - “Sorry”",
-    "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3",
-    false
-  ),
-  new PlaylistItem(
-    "Mildred Bailey – “All Of Me”",
-    "https://ia800304.us.archive.org/34/items/PaulWhitemanwithMildredBailey/PaulWhitemanwithMildredBailey-AllofMe.mp3",
-    false
-  ),
-  new PlaylistItem(
-    "Podington Bear - “Rubber Robot”",
-    "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3",
-    false
-  ),
-];
-
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
-
 const LOADING_STRING = "... loading ...";
 
 const PlayerContainer = () => {
   const [index, setIndex] = useState(0);
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const [playbackInstance, setPlaybackInstance] = useState<Audio.Sound | null>(
     null
   );
-
   const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
-
   const [state, setState] = useState({
     playbackInstanceName: LOADING_STRING,
     loopingType: LOOPING_TYPE_ALL,
@@ -86,47 +66,39 @@ const PlayerContainer = () => {
       });
 
       setState((prevState) => ({ ...prevState, fontLoaded: true }));
-      // await loadPlaylist();
+      await loadPlaylist();
       loadNewPlaybackInstance(false);
     };
 
-    initializeAudio();
+    const requestPermissions = async () => {
+      const { status } = await requestPermission();
+      if (status === "granted") {
+        initializeAudio();
+      } else {
+        console.error("Permission to access media library is required!");
+      }
+    };
+
+    requestPermissions();
   }, []);
 
   const loadPlaylist = async () => {
     try {
-      let mp3Files: { name: string; uri: string }[] = [];
-      if (FileSystem.documentDirectory) {
-        mp3Files = await scanDirectory(FileSystem.documentDirectory);
-      } else {
-        console.error("FileSystem.documentDirectory is null");
-      }
-      const newPlaylist = mp3Files.map((file) => {
-        return new PlaylistItem(file.name, file.uri, false);
+      const media = await MediaLibrary.getAssetsAsync({
+        mediaType: MediaLibrary.MediaType.audio,
+        first: 1000, // Adjust this number based on your needs
       });
+
+      const newPlaylist = media.assets
+        .filter((asset) => asset.filename.endsWith(".mp3"))
+        .map((asset) => {
+          return new PlaylistItem(asset.filename, asset.uri, false);
+        });
+
       setPlaylist(newPlaylist);
     } catch (error) {
       console.error("Error loading playlist:", error);
     }
-  };
-
-  const scanDirectory = async (
-    directory: string
-  ): Promise<{ name: string; uri: string }[]> => {
-    let mp3Files: { name: string; uri: string }[] = [];
-    const files = await FileSystem.readDirectoryAsync(directory);
-
-    for (const file of files) {
-      const fileInfo = await FileSystem.getInfoAsync(directory + file);
-      if (fileInfo.isDirectory) {
-        const nestedFiles = await scanDirectory(directory + file + "/");
-        mp3Files = mp3Files.concat(nestedFiles);
-      } else if (file.endsWith(".mp3")) {
-        mp3Files.push({ name: file, uri: directory + file });
-      }
-    }
-
-    return mp3Files;
   };
 
   const loadNewPlaybackInstance = async (playing: boolean) => {
@@ -135,7 +107,7 @@ const PlayerContainer = () => {
       setPlaybackInstance(null);
     }
 
-    const source = { uri: PLAYLIST[index].uri };
+    const source = { uri: playlist[index].uri };
     const initialStatus = {
       shouldPlay: playing,
       rate: state.rate,
@@ -168,7 +140,7 @@ const PlayerContainer = () => {
     } else {
       setState((prevState) => ({
         ...prevState,
-        playbackInstanceName: PLAYLIST[index].name,
+        playbackInstanceName: playlist[index].name,
         isLoading: false,
       }));
     }
@@ -201,7 +173,7 @@ const PlayerContainer = () => {
   };
 
   const advanceIndex = (forward: boolean) => {
-    setIndex((index + (forward ? 1 : PLAYLIST.length - 1)) % PLAYLIST.length);
+    setIndex((index + (forward ? 1 : playlist.length - 1)) % playlist.length);
   };
 
   const updatePlaybackInstanceForIndex = async (playing: boolean) => {
