@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { ICON_MUTED_BUTTON } from "@/constants/Icons";
+import { ICON_MUTED_BUTTON } from "@/constants";
 
 interface BottomButtonContainerProps {
   children: React.ReactNode;

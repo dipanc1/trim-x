@@ -1,5 +1,31 @@
-import {Colors} from './Colors';
+import { Colors } from './Colors';
+import {
+    ICON_PLAY_BUTTON,
+    ICON_PAUSE_BUTTON,
+    ICON_STOP_BUTTON,
+    ICON_FORWARD_BUTTON,
+    ICON_BACK_BUTTON,
+    ICON_LOOP_ALL_BUTTON,
+    ICON_LOOP_ONE_BUTTON,
+    ICON_MUTED_BUTTON,
+    ICON_UNMUTED_BUTTON,
+    ICON_TRACK_1,
+    ICON_THUMB_1,
+    ICON_THUMB_2
+} from './Icons';
 
 export {
     Colors,
+    ICON_PLAY_BUTTON,
+    ICON_PAUSE_BUTTON,
+    ICON_STOP_BUTTON,
+    ICON_FORWARD_BUTTON,
+    ICON_BACK_BUTTON,
+    ICON_LOOP_ALL_BUTTON,
+    ICON_LOOP_ONE_BUTTON,
+    ICON_MUTED_BUTTON,
+    ICON_UNMUTED_BUTTON,
+    ICON_TRACK_1,
+    ICON_THUMB_1,
+    ICON_THUMB_2
 }

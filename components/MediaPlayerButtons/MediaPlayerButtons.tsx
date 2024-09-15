@@ -12,7 +12,7 @@ import {
   ICON_PAUSE_BUTTON,
   ICON_PLAY_BUTTON,
   ICON_STOP_BUTTON,
-} from "@/constants/Icons";
+} from "@/constants";
 import { Colors } from "@/constants";
 
 

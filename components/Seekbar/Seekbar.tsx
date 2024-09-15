@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Slider from "@react-native-community/slider";
-import { ICON_THUMB_1, ICON_TRACK_1 } from "@/constants/Icons";
+import { ICON_THUMB_1, ICON_TRACK_1 } from "@/constants";
 
 interface SeekbarProps {
   isLoading: boolean;

@@ -11,7 +11,7 @@ import {
   ICON_THUMB_2,
   ICON_TRACK_1,
   ICON_UNMUTED_BUTTON,
-} from "@/constants/Icons";
+} from "@/constants";
 import Slider from "@react-native-community/slider";
 import { Colors } from "@/constants";
 
