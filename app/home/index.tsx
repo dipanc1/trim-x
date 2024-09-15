@@ -21,7 +21,14 @@ import {
 } from "@/constants/Icons";
 
 import Seekbar from "@/components/Seekbar";
-import { MediaPlayerButtons, OnLoop, VolumeControl } from "@/components";
+import {
+  MediaPlayerButtons,
+  OnLoop,
+  PitchCorrection,
+  ThroughEarpiece,
+  VolumeControl,
+} from "@/components";
+import { BottomButtonContainer, MiddleButtonContainer } from "@/common";
 
 class PlaylistItem {
   name: string;
@@ -52,9 +59,6 @@ const PLAYLIST = [
     false
   ),
 ];
-
-const ICON_THROUGH_EARPIECE = "speaker-phone";
-const ICON_THROUGH_SPEAKER = "speaker";
 
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
@@ -231,32 +235,6 @@ const Home: React.FC = () => {
     loadNewPlaybackInstance(playing);
   };
 
-  const trySetRate = async (rate: number, shouldCorrectPitch: boolean) => {
-    if (playbackInstance) {
-      try {
-        await playbackInstance.setRateAsync(rate, shouldCorrectPitch);
-      } catch (error) {
-        // Rate changing could not be performed, possibly because the client's Android API is too old.
-      }
-    }
-  };
-
-  const onPitchCorrectionPressed = async () => {
-    trySetRate(state.rate, !state.shouldCorrectPitch);
-  };
-
-  const onSpeakerPressed = () => {
-    setState((prevState) => {
-      const newThroughEarpiece = !prevState.throughEarpiece;
-      Audio.setAudioModeAsync({
-        shouldDuckAndroid: true,
-        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
-        playThroughEarpieceAndroid: newThroughEarpiece,
-      });
-      return { ...prevState, throughEarpiece: newThroughEarpiece };
-    });
-  };
-
   return !state.fontLoaded ? (
     <View style={styles.emptyContainer} />
   ) : (
@@ -270,6 +248,7 @@ const Home: React.FC = () => {
       </View>
 
       <View />
+      
       <View style={styles.space} />
 
       <Seekbar
@@ -289,12 +268,8 @@ const Home: React.FC = () => {
         advanceIndex={advanceIndex}
         updatePlaybackInstanceForIndex={updatePlaybackInstanceForIndex}
       />
-      {/*
-       * 3. Volume slider and mute button 4. Pitch correction slider and
-       */}
-      <View
-        style={[styles.buttonsContainerBase, styles.buttonsContainerMiddleRow]}
-      >
+
+      <MiddleButtonContainer>
         <VolumeControl
           muted={state.muted}
           playbackInstance={playbackInstance}
@@ -304,39 +279,19 @@ const Home: React.FC = () => {
           loopingType={state.loopingType}
           LOOPING_TYPE_ONE={LOOPING_TYPE_ONE}
         />
-      </View>
-      {/*
-       * 5. Pitch correction 6. Through earpiece
-       */}
-      <View
-        style={[styles.buttonsContainerBase, styles.buttonsContainerBottomRow]}
-      >
-        <TouchableHighlight
-          underlayColor={BACKGROUND_COLOR}
-          style={styles.wrapper}
-          onPress={onPitchCorrectionPressed}
-        >
-          <View style={styles.button}>
-            <Text style={[styles.text, { fontFamily: "cutive-mono-regular" }]}>
-              PC: {state.shouldCorrectPitch ? "yes" : "no"}
-            </Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-          onPress={onSpeakerPressed}
-          underlayColor={BACKGROUND_COLOR}
-        >
-          <MaterialIcons
-            name={
-              state.throughEarpiece
-                ? ICON_THROUGH_EARPIECE
-                : ICON_THROUGH_SPEAKER
-            }
-            size={32}
-            color="black"
-          />
-        </TouchableHighlight>
-      </View>
+      </MiddleButtonContainer>
+
+      <BottomButtonContainer>
+        <ThroughEarpiece
+          setState={setState}
+          throughEarpiece={state.throughEarpiece}
+        />
+        <PitchCorrection
+          playbackInstance={playbackInstance}
+          rate={state.rate}
+          shouldCorrectPitch={state.shouldCorrectPitch}
+        />
+      </BottomButtonContainer>
       <View />
     </View>
   );
@@ -355,7 +310,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: BACKGROUND_COLOR,
   },
-  wrapper: {},
   nameContainer: {
     height: FONT_SIZE,
   },
@@ -365,42 +319,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: FONT_SIZE,
     minHeight: FONT_SIZE,
-  },
-  buffering: {
-    textAlign: "left",
-    paddingLeft: 20,
-  },
-
-  button: {
-    backgroundColor: BACKGROUND_COLOR,
-  },
-  buttonsContainerBase: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  buttonsContainerMiddleRow: {
-    maxHeight: ICON_MUTED_BUTTON.height,
-    alignSelf: "stretch",
-    paddingRight: 20,
-  },
-  buttonsContainerBottomRow: {
-    maxHeight: 32,
-    alignSelf: "stretch",
-    paddingRight: 20,
-    paddingLeft: 20,
-  },
-  rateSlider: {
-    width: DEVICE_WIDTH / 2.0,
-  },
-  buttonsContainerTextRow: {
-    maxHeight: FONT_SIZE,
-    alignItems: "center",
-    paddingRight: 20,
-    paddingLeft: 20,
-    minWidth: DEVICE_WIDTH,
-    maxWidth: DEVICE_WIDTH,
   },
 });
 
