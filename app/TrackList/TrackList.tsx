@@ -19,9 +19,14 @@ interface PlaylistItem {
 interface TrackListProps {
   playlist: PlaylistItem[];
   selectTrack: (track: PlaylistItem) => void;
+  nextTrack: () => void;
 }
 
-const TrackList: React.FC<TrackListProps> = ({ playlist, selectTrack }) => {
+const TrackList: React.FC<TrackListProps> = ({
+  playlist,
+  selectTrack,
+  nextTrack,
+}) => {
   const mediaContext = React.useContext(MediaContext);
 
   if (!mediaContext) {
@@ -37,7 +42,7 @@ const TrackList: React.FC<TrackListProps> = ({ playlist, selectTrack }) => {
   );
 
   return currentTrack ? (
-    <Player />
+    <Player nextTrack={nextTrack} />
   ) : (
     <View style={styles.container}>
       <FlatList

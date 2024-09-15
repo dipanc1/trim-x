@@ -58,6 +58,7 @@ const Player: React.FC<PlayerProps> = ({
   loopingType,
   LOOPING_TYPE_ONE,
 }) => {
+  console.log(playbackInstanceName);
   return !fontLoaded ? (
     <View style={styles.emptyContainer} />
   ) : (

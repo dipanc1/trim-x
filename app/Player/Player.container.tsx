@@ -7,30 +7,30 @@ import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import Player from "./Player";
+import { MediaContext } from "@/context/MediaContext";
 
-class PlaylistItem {
-  name: string;
-  uri: string;
-  isVideo: boolean;
-
-  constructor(name: string, uri: string, isVideo: boolean) {
-    this.name = name;
-    this.uri = uri;
-    this.isVideo = isVideo;
-  }
+interface PlayerContainerProps {
+  nextTrack: () => void;
 }
 
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
 const LOADING_STRING = "... loading ...";
 
-const PlayerContainer = () => {
-  const [index, setIndex] = useState(0);
+const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
+  const mediaContext = React.useContext(MediaContext);
+
+  if (!mediaContext) {
+    throw new Error("MediaContext is null");
+  }
+
+  const { currentTrack } = mediaContext;
+
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const [playbackInstance, setPlaybackInstance] = useState<Audio.Sound | null>(
     null
   );
-  const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
+  //   const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
   const [state, setState] = useState({
     playbackInstanceName: LOADING_STRING,
     loopingType: LOOPING_TYPE_ALL,
@@ -66,7 +66,6 @@ const PlayerContainer = () => {
       });
 
       setState((prevState) => ({ ...prevState, fontLoaded: true }));
-      await loadPlaylist();
       loadNewPlaybackInstance(false);
     };
 
@@ -82,32 +81,13 @@ const PlayerContainer = () => {
     requestPermissions();
   }, []);
 
-  const loadPlaylist = async () => {
-    try {
-      const media = await MediaLibrary.getAssetsAsync({
-        mediaType: MediaLibrary.MediaType.audio,
-        first: 10, // Adjust this number based on your needs
-      });
-
-      const newPlaylist = media.assets
-        .filter((asset) => asset.filename.endsWith(".mp3"))
-        .map((asset) => {
-          return new PlaylistItem(asset.filename, asset.uri, false);
-        });
-
-      setPlaylist(newPlaylist);
-    } catch (error) {
-      console.error("Error loading playlist:", error);
-    }
-  };
-
   const loadNewPlaybackInstance = async (playing: boolean) => {
     if (playbackInstance) {
       await playbackInstance.unloadAsync();
       setPlaybackInstance(null);
     }
 
-    const source = { uri: playlist[index].uri };
+    const source = { uri: currentTrack.uri };
     const initialStatus = {
       shouldPlay: playing,
       rate: state.rate,
@@ -140,7 +120,7 @@ const PlayerContainer = () => {
     } else {
       setState((prevState) => ({
         ...prevState,
-        playbackInstanceName: playlist[index].name,
+        playbackInstanceName: currentTrack.title,
         isLoading: false,
       }));
     }
@@ -162,7 +142,7 @@ const PlayerContainer = () => {
         shouldCorrectPitch: status.shouldCorrectPitch,
       }));
       if (status.didJustFinish && !status.isLooping) {
-        advanceIndex(true);
+        nextTrack();
         updatePlaybackInstanceForIndex(true);
       }
     } else {
@@ -170,10 +150,6 @@ const PlayerContainer = () => {
         console.log(`FATAL PLAYER ERROR: ${status.error}`);
       }
     }
-  };
-
-  const advanceIndex = (forward: boolean) => {
-    setIndex((index + (forward ? 1 : playlist.length - 1)) % playlist.length);
   };
 
   const updatePlaybackInstanceForIndex = async (playing: boolean) => {
@@ -192,7 +168,7 @@ const PlayerContainer = () => {
       playbackInstanceName={state.playbackInstanceName}
       playbackInstancePosition={state.playbackInstancePosition}
       playbackInstanceDuration={state.playbackInstanceDuration}
-      advanceIndex={advanceIndex}
+      advanceIndex={nextTrack}
       updatePlaybackInstanceForIndex={updatePlaybackInstanceForIndex}
       muted={state.muted}
       setState={setState}

@@ -38,16 +38,19 @@ const TrackListContainer = () => {
     try {
       const media = await MediaLibrary.getAssetsAsync({
         mediaType: MediaLibrary.MediaType.audio,
-        first: 10, // Adjust this number based on your needs
+        first: 10, // TODO: Implement pagination
       });
 
       const newPlaylist = media.assets
         .filter((asset) => asset.filename.endsWith(".mp3"))
-        .map((asset) => ({
+        .map((asset, index, array) => ({
           id: asset.id,
           title: asset.filename,
           uri: asset.uri,
           duration: asset.duration,
+          first: index === 0,
+          last: index === array.length - 1,
+          length: array.length,
         }));
 
       setPlaylist(newPlaylist);
@@ -61,7 +64,24 @@ const TrackListContainer = () => {
     setCurrentTrack(track);
   };
 
-  return <TrackList playlist={playlist} selectTrack={selectTrack} />;
+  const nextTrack = () => {
+    const currentIndex = playlist.findIndex(
+      (track) => track.id === mediaContext.currentTrack.id
+    );
+
+    if (currentIndex === -1) {
+      return;
+    }
+
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= playlist.length) {
+      return;
+    }
+
+    setCurrentTrack(playlist[nextIndex]);
+  };
+
+  return <TrackList playlist={playlist} selectTrack={selectTrack} nextTrack={nextTrack} />;
 };
 
 export default TrackListContainer;
