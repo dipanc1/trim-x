@@ -38,7 +38,7 @@ const TrackListContainer = () => {
     try {
       const media = await MediaLibrary.getAssetsAsync({
         mediaType: MediaLibrary.MediaType.audio,
-        first: 10, // TODO: Implement pagination
+        first: 1000, // TODO: Implement pagination
       });
 
       const newPlaylist = media.assets
@@ -48,8 +48,8 @@ const TrackListContainer = () => {
           title: asset.filename,
           uri: asset.uri,
           duration: asset.duration,
-          first: index === 0,
-          last: index === array.length - 1,
+          isFirst: index === 0,
+          isLast: index === array.length - 1,
           length: array.length,
         }));
 
@@ -60,7 +60,6 @@ const TrackListContainer = () => {
   };
 
   const selectTrack = (track: PlaylistItem) => {
-    console.log("Selected track:", track);
     setCurrentTrack(track);
   };
 

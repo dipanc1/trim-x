@@ -1,5 +1,6 @@
 import React from "react";
 import MediaPlayerButtons from "./MediaPlayerButtons";
+import { MediaContext } from "@/context/MediaContext";
 
 interface MediaPlayerButtonsContainerProps {
   isLoading: boolean;
@@ -20,6 +21,14 @@ const MediaPlayerButtonsContainer: React.FC<
   advanceIndex,
   updatePlaybackInstanceForIndex,
 }) => {
+  const mediaContext = React.useContext(MediaContext);
+
+  if (!mediaContext) {
+    throw new Error("MediaContext is null");
+  }
+
+  const { currentTrack } = mediaContext;
+
   const onBackPressed = () => {
     if (playbackInstance) {
       advanceIndex(false);
@@ -57,6 +66,8 @@ const MediaPlayerButtonsContainer: React.FC<
       onPlayPausePressed={onPlayPausePressed}
       onStopPressed={onStopPressed}
       onForwardPressed={onForwardPressed}
+      firstTrack={currentTrack.isFirst}
+      lastTrack={currentTrack.isLast}
     />
   );
 };

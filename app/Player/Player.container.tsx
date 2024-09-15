@@ -24,7 +24,7 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
     throw new Error("MediaContext is null");
   }
 
-  const { currentTrack } = mediaContext;
+  const { currentTrack, setCurrentTrack } = mediaContext;
 
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const [playbackInstance, setPlaybackInstance] = useState<Audio.Sound | null>(
@@ -157,6 +157,14 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
     loadNewPlaybackInstance(playing);
   };
 
+  const backToTrackList = () => {
+    if (playbackInstance) {
+      playbackInstance.stopAsync();
+    }
+
+    setCurrentTrack(null);
+  };
+
   return (
     <Player
       fontLoaded={state.fontLoaded}
@@ -177,6 +185,7 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
       shouldCorrectPitch={state.shouldCorrectPitch}
       loopingType={state.loopingType}
       LOOPING_TYPE_ONE={LOOPING_TYPE_ONE}
+      backToTrackList={backToTrackList}
     />
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { Audio } from "expo-av";
 
@@ -12,6 +12,8 @@ import {
   VolumeControl,
 } from "@/components";
 import { BottomButtonContainer, MiddleButtonContainer } from "@/common";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 interface PlayerProps {
   fontLoaded: boolean;
@@ -32,9 +34,8 @@ interface PlayerProps {
   shouldCorrectPitch: boolean;
   loopingType: number;
   LOOPING_TYPE_ONE: number;
+  backToTrackList: () => void;
 }
-
-const BACKGROUND_COLOR = "#FFF8ED";
 
 const FONT_SIZE = 14;
 
@@ -57,8 +58,8 @@ const Player: React.FC<PlayerProps> = ({
   shouldCorrectPitch,
   loopingType,
   LOOPING_TYPE_ONE,
+  backToTrackList
 }) => {
-  console.log(playbackInstanceName);
   return !fontLoaded ? (
     <View style={styles.emptyContainer} />
   ) : (
@@ -103,12 +104,16 @@ const Player: React.FC<PlayerProps> = ({
       </MiddleButtonContainer>
 
       <BottomButtonContainer>
+        <TouchableOpacity onPress={backToTrackList}>
+          <MaterialIcons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+
         <PitchCorrection
           playbackInstance={playbackInstance}
           rate={rate}
           shouldCorrectPitch={shouldCorrectPitch}
         />
-        
+
         <ThroughEarpiece
           setState={setState}
           throughEarpiece={throughEarpiece}
@@ -125,7 +130,7 @@ export default Player;
 const styles = StyleSheet.create({
   emptyContainer: {
     alignSelf: "stretch",
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Colors.playerBackground,
   },
   container: {
     flex: 1,
@@ -133,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     alignSelf: "stretch",
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Colors.playerBackground,
   },
   nameContainer: {
     height: FONT_SIZE,

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import React from "react";
+import { Colors } from "@/constants";
 
-const BACKGROUND_COLOR = "#FFF8ED";
 const FONT_SIZE = 14;
 
 interface PitchCorrectionProps {
@@ -15,7 +15,7 @@ const PitchCorrection: React.FC<PitchCorrectionProps> = ({
 }) => {
   return (
     <TouchableHighlight
-      underlayColor={BACKGROUND_COLOR}
+      underlayColor={Colors.playerBackground}
       style={styles.wrapper}
       onPress={onPitchCorrectionPressed}
     >
@@ -33,7 +33,7 @@ export default PitchCorrection;
 const styles = StyleSheet.create({
   wrapper: {},
   button: {
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Colors.playerBackground,
   },
   text: {
     fontSize: FONT_SIZE,

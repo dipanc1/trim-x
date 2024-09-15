@@ -13,8 +13,8 @@ import {
   ICON_UNMUTED_BUTTON,
 } from "@/constants/Icons";
 import Slider from "@react-native-community/slider";
+import { Colors } from "@/constants";
 
-const BACKGROUND_COLOR = "#FFF8ED";
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
 
 interface VolumeControlProps {
@@ -31,7 +31,7 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
   return (
     <View style={styles.volumeContainer}>
       <TouchableHighlight
-        underlayColor={BACKGROUND_COLOR}
+        underlayColor={Colors.playerBackground}
         style={styles.wrapper}
         onPress={onMutePressed}
       >
@@ -56,7 +56,7 @@ export default VolumeControl;
 const styles = StyleSheet.create({
   wrapper: {},
   button: {
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Colors.playerBackground,
   },
   volumeContainer: {
     flex: 1,

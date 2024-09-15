@@ -8,6 +8,7 @@ import {
 import React from "react";
 import { MediaContext } from "@/context/MediaContext";
 import Player from "../Player";
+import { Colors } from "@/constants";
 
 interface PlaylistItem {
   id: string;
@@ -59,7 +60,9 @@ export default TrackList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignSelf: "stretch",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.playerBackground,
   },
 });

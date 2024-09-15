@@ -10,8 +10,8 @@ import {
   ICON_LOOP_ONE_BUTTON,
   ICON_PLAY_BUTTON,
 } from "@/constants/Icons";
+import { Colors } from "@/constants";
 
-const BACKGROUND_COLOR = "#FFF8ED";
 const LOOPING_TYPE_ICONS = { 0: ICON_LOOP_ALL_BUTTON, 1: ICON_LOOP_ONE_BUTTON };
 
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
@@ -24,7 +24,7 @@ interface OnLoopProps {
 const OnLoop: React.FC<OnLoopProps> = ({ onLoopPressed, loopingType }) => {
   return (
     <TouchableHighlight
-      underlayColor={BACKGROUND_COLOR}
+      underlayColor={Colors.playerBackground}
       style={styles.wrapper}
       onPress={onLoopPressed}
     >
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   button: {
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Colors.playerBackground,
   },
   buttonsContainerTopRow: {
     maxHeight: ICON_PLAY_BUTTON.height,

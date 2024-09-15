@@ -2,7 +2,6 @@ import {
   Dimensions,
   Image,
   StyleSheet,
-  Text,
   TouchableHighlight,
   View,
 } from "react-native";
@@ -14,8 +13,9 @@ import {
   ICON_PLAY_BUTTON,
   ICON_STOP_BUTTON,
 } from "@/constants/Icons";
+import { Colors } from "@/constants";
 
-const BACKGROUND_COLOR = "#FFF8ED";
+
 const DISABLED_OPACITY = 0.5;
 const { width: DEVICE_WIDTH } = Dimensions.get("window");
 
@@ -26,6 +26,8 @@ interface MediaPlayerButtonsProps {
   onPlayPausePressed: () => void;
   onStopPressed: () => void;
   onForwardPressed: () => void;
+  firstTrack: boolean;
+  lastTrack: boolean;
 }
 
 const MediaPlayerButtons: React.FC<MediaPlayerButtonsProps> = ({
@@ -35,6 +37,8 @@ const MediaPlayerButtons: React.FC<MediaPlayerButtonsProps> = ({
   onPlayPausePressed,
   onStopPressed,
   onForwardPressed,
+  firstTrack,
+  lastTrack,
 }) => {
   return (
     <View
@@ -47,15 +51,15 @@ const MediaPlayerButtons: React.FC<MediaPlayerButtonsProps> = ({
       ]}
     >
       <TouchableHighlight
-        underlayColor={BACKGROUND_COLOR}
+        underlayColor={Colors.playerBackground}
         style={styles.wrapper}
         onPress={onBackPressed}
-        disabled={isLoading}
+        disabled={isLoading || firstTrack}
       >
         <Image style={styles.button} source={ICON_BACK_BUTTON.module} />
       </TouchableHighlight>
       <TouchableHighlight
-        underlayColor={BACKGROUND_COLOR}
+        underlayColor={Colors.playerBackground}
         style={styles.wrapper}
         onPress={onPlayPausePressed}
         disabled={isLoading}
@@ -68,7 +72,7 @@ const MediaPlayerButtons: React.FC<MediaPlayerButtonsProps> = ({
         />
       </TouchableHighlight>
       <TouchableHighlight
-        underlayColor={BACKGROUND_COLOR}
+        underlayColor={Colors.playerBackground}
         style={styles.wrapper}
         onPress={onStopPressed}
         disabled={isLoading}
@@ -76,10 +80,10 @@ const MediaPlayerButtons: React.FC<MediaPlayerButtonsProps> = ({
         <Image style={styles.button} source={ICON_STOP_BUTTON.module} />
       </TouchableHighlight>
       <TouchableHighlight
-        underlayColor={BACKGROUND_COLOR}
+        underlayColor={Colors.playerBackground}
         style={styles.wrapper}
         onPress={onForwardPressed}
-        disabled={isLoading}
+        disabled={isLoading || lastTrack}
       >
         <Image style={styles.button} source={ICON_FORWARD_BUTTON.module} />
       </TouchableHighlight>
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   button: {
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: Colors.playerBackground,
   },
   buttonsContainerTopRow: {
     maxHeight: ICON_PLAY_BUTTON.height,

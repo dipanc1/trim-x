@@ -1,8 +1,7 @@
 import { TouchableHighlight } from "react-native";
 import React from "react";
 import { MaterialIcons } from "@expo/vector-icons";
-
-const BACKGROUND_COLOR = "#FFF8ED";
+import { Colors } from "@/constants";
 
 const ICON_THROUGH_EARPIECE = "speaker-phone";
 const ICON_THROUGH_SPEAKER = "speaker";
@@ -19,7 +18,7 @@ const ThroughEarpiece: React.FC<ThroughEarpieceProps> = ({
   return (
     <TouchableHighlight
       onPress={onSpeakerPressed}
-      underlayColor={BACKGROUND_COLOR}
+      underlayColor={Colors.playerBackground}
     >
       <MaterialIcons
         name={throughEarpiece ? ICON_THROUGH_EARPIECE : ICON_THROUGH_SPEAKER}
