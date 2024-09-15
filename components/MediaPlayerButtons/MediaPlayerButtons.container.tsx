@@ -7,7 +7,7 @@ interface MediaPlayerButtonsContainerProps {
   isPlaying: boolean;
   shouldPlay: boolean;
   playbackInstance: any;
-  advanceIndex: (forward: boolean) => void;
+  advanceIndex: () => void;
   updatePlaybackInstanceForIndex: (shouldPlay: boolean) => void;
 }
 
@@ -31,7 +31,7 @@ const MediaPlayerButtonsContainer: React.FC<
 
   const onBackPressed = () => {
     if (playbackInstance) {
-      advanceIndex(false);
+      advanceIndex();
       updatePlaybackInstanceForIndex(shouldPlay);
     }
   };
@@ -53,7 +53,7 @@ const MediaPlayerButtonsContainer: React.FC<
 
   const onForwardPressed = () => {
     if (playbackInstance) {
-      advanceIndex(true);
+      advanceIndex();
       updatePlaybackInstanceForIndex(shouldPlay);
     }
   };

@@ -25,7 +25,7 @@ interface PlayerProps {
   playbackInstanceName: string;
   playbackInstancePosition: number | null;
   playbackInstanceDuration: number | null;
-  advanceIndex: (forward: boolean) => void;
+  advanceIndex: () => void;
   updatePlaybackInstanceForIndex: (shouldPlay: boolean) => void;
   muted: boolean;
   setState: React.Dispatch<React.SetStateAction<any>>;

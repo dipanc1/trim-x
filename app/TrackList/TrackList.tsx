@@ -19,25 +19,23 @@ interface PlaylistItem {
 
 interface TrackListProps {
   playlist: PlaylistItem[];
-  selectTrack: (track: PlaylistItem) => void;
   nextTrack: () => void;
 }
 
-const TrackList: React.FC<TrackListProps> = ({
-  playlist,
-  selectTrack,
-  nextTrack,
-}) => {
+const TrackList: React.FC<TrackListProps> = ({ playlist, nextTrack }) => {
   const mediaContext = React.useContext(MediaContext);
 
   if (!mediaContext) {
     throw new Error("MediaContext is null");
   }
 
-  const { currentTrack } = mediaContext;
+  const { currentTrack, setCurrentTrack: selectTrack } = mediaContext;
 
   const renderItem = ({ item }: { item: PlaylistItem }) => (
-    <TouchableOpacity onPress={() => selectTrack(item)} style={{ padding: 10 }}>
+    <TouchableOpacity
+      onPress={() => selectTrack(item)}
+      style={{ padding: 10 }}
+    >
       <Text>{item.title}</Text>
     </TouchableOpacity>
   );

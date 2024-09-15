@@ -59,10 +59,6 @@ const TrackListContainer = () => {
     }
   };
 
-  const selectTrack = (track: PlaylistItem) => {
-    setCurrentTrack(track);
-  };
-
   const nextTrack = () => {
     const currentIndex = playlist.findIndex(
       (track) => track.id === mediaContext.currentTrack.id
@@ -73,14 +69,17 @@ const TrackListContainer = () => {
     }
 
     const nextIndex = currentIndex + 1;
+    
     if (nextIndex >= playlist.length) {
       return;
     }
+    
+    const nextTrack = playlist[nextIndex];
 
-    setCurrentTrack(playlist[nextIndex]);
+    setCurrentTrack(nextTrack);
   };
 
-  return <TrackList playlist={playlist} selectTrack={selectTrack} nextTrack={nextTrack} />;
+  return <TrackList playlist={playlist} nextTrack={nextTrack} />;
 };
 
 export default TrackListContainer;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import { Audio, InterruptionModeAndroid } from "expo-av";
-import * as MediaLibrary from "expo-media-library";
 
 import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -26,11 +25,10 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
 
   const { currentTrack, setCurrentTrack } = mediaContext;
 
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
   const [playbackInstance, setPlaybackInstance] = useState<Audio.Sound | null>(
     null
   );
-  //   const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
+
   const [state, setState] = useState({
     playbackInstanceName: LOADING_STRING,
     loopingType: LOOPING_TYPE_ALL,
@@ -69,16 +67,7 @@ const PlayerContainer: React.FC<PlayerContainerProps> = ({ nextTrack }) => {
       loadNewPlaybackInstance(false);
     };
 
-    const requestPermissions = async () => {
-      const { status } = await requestPermission();
-      if (status === "granted") {
-        initializeAudio();
-      } else {
-        console.error("Permission to access media library is required!");
-      }
-    };
-
-    requestPermissions();
+    initializeAudio();
   }, []);
 
   const loadNewPlaybackInstance = async (playing: boolean) => {
