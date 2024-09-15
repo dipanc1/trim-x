@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { Audio, InterruptionModeAndroid } from "expo-av";
 import * as FileSystem from "expo-file-system";
 
 import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
-
-import {
-  ICON_LOOP_ALL_BUTTON,
-  ICON_LOOP_ONE_BUTTON,
-  ICON_MUTED_BUTTON,
-} from "@/constants/Icons";
 
 import Seekbar from "@/components/Seekbar";
 import {
@@ -63,7 +50,6 @@ const PLAYLIST = [
 const LOOPING_TYPE_ALL = 0;
 const LOOPING_TYPE_ONE = 1;
 
-const { width: DEVICE_WIDTH } = Dimensions.get("window");
 const BACKGROUND_COLOR = "#FFF8ED";
 
 const FONT_SIZE = 14;
@@ -171,7 +157,7 @@ const Home: React.FC = () => {
       isLooping: state.loopingType === LOOPING_TYPE_ONE,
     };
 
-    const { sound, status } = await Audio.Sound.createAsync(
+    const { sound } = await Audio.Sound.createAsync(
       source,
       initialStatus,
       onPlaybackStatusUpdate
@@ -248,7 +234,7 @@ const Home: React.FC = () => {
       </View>
 
       <View />
-      
+
       <View style={styles.space} />
 
       <Seekbar
@@ -292,6 +278,7 @@ const Home: React.FC = () => {
           shouldCorrectPitch={state.shouldCorrectPitch}
         />
       </BottomButtonContainer>
+
       <View />
     </View>
   );
